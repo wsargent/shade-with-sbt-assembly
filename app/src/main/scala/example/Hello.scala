@@ -1,9 +1,16 @@
 package example
 
-object Hello extends Greeting with App {
-  println(greeting)
-}
+import org.asynchttpclient._
 
-trait Greeting {
-  lazy val greeting: String = "hello"
+object Hello {
+
+  def main(args: Array[String]): Unit = {
+    val config = new DefaultAsyncHttpClientConfig.Builder().build()
+    val client = new DefaultAsyncHttpClient(config)
+
+    println(s"Hello $client")
+
+    client.close()
+  }
+
 }
