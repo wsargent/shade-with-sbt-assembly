@@ -38,7 +38,7 @@ lazy val shaded_gs_collections = Project(
       Seq(
         assemblyShadeRules in assembly := Seq(
           ShadeRule.rename("com.gs.collections.**" ->
-              "org.apache.example.gs.collections.@1").inAll
+              "shadeio.@0").inAll
         )
       ) ++
       Seq(
@@ -67,7 +67,7 @@ lazy val app = (project in file("app"))
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(
-    name := "example-shaded-assembly"
+    name := "shade-with-sbt-assembly"
   ).aggregate(shaded, app)
   .disablePlugins(sbtassembly.AssemblyPlugin)
 

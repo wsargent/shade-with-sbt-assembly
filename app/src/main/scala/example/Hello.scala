@@ -1,6 +1,6 @@
 package example
 
-import org.apache.gearpump.gs.collections.impl.list.mutable.FastList
+import shadeio.com.gs.collections.impl.list.mutable.FastList
 
 import scala.collection.mutable
 
