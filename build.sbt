@@ -14,7 +14,7 @@ val gsCollectionsVersion = "6.2.0"
 val scalaVersionMajor = "2.12"
 
 val shadeAssemblySettings = commonSettings ++ Seq(
-  logLevel in assembly := Level.Debug,
+  //logLevel in assembly := Level.Debug,
   test in assembly := {},
   assemblyOption in assembly ~= {
     _.copy(includeScala = false)
@@ -48,9 +48,9 @@ lazy val shaded_gs_collections = Project(
       )
 )
 
-def getShadedJarFile(name: String, gearpumpVersion: String): File = {
+def getShadedJarFile(name: String, version: String): File = {
   shaded.base / "target" / scalaVersionMajor /
-    s"example-shaded-$name-$scalaVersionMajor-$gearpumpVersion-assembly.jar"
+    s"example-shaded-$name-$scalaVersionMajor-$version-assembly.jar"
 }
 
 val streamingDependencies = Seq(
