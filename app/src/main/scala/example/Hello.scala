@@ -1,16 +1,15 @@
 package example
 
-import org.asynchttpclient._
+import org.apache.gearpump.gs.collections.impl.list.mutable.FastList
+
+import scala.collection.mutable
 
 object Hello {
 
   def main(args: Array[String]): Unit = {
-    val config = new DefaultAsyncHttpClientConfig.Builder().build()
-    val client = new DefaultAsyncHttpClient(config)
+    val people = FastList.newListWith("person1", "person2", "person3");
 
-    println(s"Hello $client")
-
-    client.close()
+    println(s"Hello $people")
   }
 
 }
