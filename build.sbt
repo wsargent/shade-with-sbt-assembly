@@ -3,15 +3,7 @@ import Dependencies._
 lazy val commonSettings = Seq(
   version := "0.1-SNAPSHOT",
   organization := "com.example",
-  scalaVersion := "2.12.1",
-  test in assembly := {},
-  assemblyMergeStrategy in assembly := {
-    case "META-INF/io.netty.versions.properties" =>
-      MergeStrategy.first
-    case x =>
-      val oldStrategy = (assemblyMergeStrategy in assembly).value
-      oldStrategy(x)
-  }
+  scalaVersion := "2.12.1"
 )
 
 val asyncHttpClientVersion = "2.0.11"
@@ -22,21 +14,23 @@ lazy val asyncHttpClient = Seq(
   "org.asynchttpclient" % "netty-codec-dns" % asyncHttpClientVersion
 )
 
-lazy val app = (project in file("app")).
-  settings(commonSettings: _*).
-  settings(
-    mainClass := Some("example.Hello"),
-    libraryDependencies ++= asyncHttpClient,
-    libraryDependencies += scalaTest % Test
-  )
-
-// https://github.com/dwijnand/giter8/commit/5c9b4529d36d8b2f46323c52918f4833870a26ac
-lazy val shaded = (project in file("shaded")).
-  settings(commonSettings: _*).
-  dependsOn(app).
-  settings(
+lazy val app = (project in file("app"))
+  .settings(commonSettings: _*)
+  .settings(
+      libraryDependencies ++= asyncHttpClient,
+      libraryDependencies += scalaTest % Test
+    )
+  .settings(
+    test in assembly := {},
+    assemblyMergeStrategy in assembly := {
+      case "META-INF/io.netty.versions.properties" =>
+        MergeStrategy.first
+      case x =>
+        val oldStrategy = (assemblyMergeStrategy in assembly).value
+        oldStrategy(x)
+    },
+    mainClass in assembly := Some("example.Hello"),
     logLevel in assembly := Level.Debug,
-    name := "ahc-shaded",
     assemblyOption in assembly ~= (_.copy(includeScala = false)),
     assemblyShadeRules in assembly := Seq(
       ShadeRule.rename("io.netty.**" -> "play.ws.libs.ws.ahc.@0").inAll,
@@ -50,5 +44,5 @@ lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   settings(
     name := "Hello"
-  ).aggregate(app, shaded)
+  ).aggregate(app)
 
