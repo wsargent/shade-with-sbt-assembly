@@ -10,11 +10,10 @@ lazy val commonSettings = Seq(
 val crossScalaVersionNumbers = Seq("2.12.1")
 val scalaVersionNumber = crossScalaVersionNumbers.last
 
-val gsCollectionsVersion = "6.2.0"
 val scalaVersionMajor = "2.12"
 
 val shadeAssemblySettings = commonSettings ++ Seq(
-  //logLevel in assembly := Level.Debug,
+  logLevel in assembly := Level.Info,
   test in assembly := {},
   assemblyOption in assembly ~= {
     _.copy(includeScala = false)
@@ -28,41 +27,48 @@ val shadeAssemblySettings = commonSettings ++ Seq(
 lazy val shaded = Project(
   id = "example-shaded",
   base = file("shaded")
-).aggregate(shaded_gs_collections).disablePlugins(sbtassembly.AssemblyPlugin)
+).aggregate(shaded_bytebuddy).disablePlugins(sbtassembly.AssemblyPlugin)
 
-lazy val shaded_gs_collections = Project(
-  id = "example-shaded-gs-collections",
-  base = file("shaded/gs-collections"),
-  settings = shadeAssemblySettings ++ addArtifact(Artifact("example-shaded-gs-collections",
+lazy val shaded_bytebuddy = Project(
+  id = "shaded-bytebuddy",
+  base = file("shaded/bytebuddy"),
+  settings = shadeAssemblySettings ++ addArtifact(Artifact("shaded-bytebuddy",
     "assembly"), sbtassembly.AssemblyKeys.assembly) ++
       Seq(
         assemblyShadeRules in assembly := Seq(
-          ShadeRule.rename("com.gs.collections.**" ->
+          ShadeRule.rename("net.bytebuddy.**" ->
               "shadeio.@0").inAll
         )
       ) ++
       Seq(
         libraryDependencies ++= Seq(
-          "com.goldmansachs" % "gs-collections" % gsCollectionsVersion
+          "net.bytebuddy" % "byte-buddy" % "1.8.22",
+          "net.bytebuddy" % "byte-buddy-agent" % "1.8.22"
         )
       )
 )
 
 def getShadedJarFile(name: String, version: String): File = {
   shaded.base / "target" / scalaVersionMajor /
-    s"example-shaded-$name-$scalaVersionMajor-$version-assembly.jar"
+    s"shaded-$name-$scalaVersionMajor-$version-assembly.jar"
 }
 
-val streamingDependencies = Seq(
+val shadedDependencies = Seq(
   unmanagedJars in Compile ++= Seq(
-    getShadedJarFile("gs-collections", version.value)
+    getShadedJarFile("bytebuddy", version.value)
   )
 )
 
 lazy val app = (project in file("app"))
   .settings(commonSettings: _*)
-  .settings(streamingDependencies)
-  .disablePlugins(sbtassembly.AssemblyPlugin)
+  .settings(shadedDependencies)
+  .settings(
+    crossPaths := false,
+    autoScalaLibrary := false,
+    mainClass in assembly := Some("example.Hello"),
+    libraryDependencies += "com.typesafe" % "config" % "1.3.2",
+    assemblyOption in assembly := (assemblyOption in assembly).value.copy(includeScala = false)
+  ).aggregate(shaded)
 
 lazy val root = (project in file(".")).
   settings(commonSettings: _*).

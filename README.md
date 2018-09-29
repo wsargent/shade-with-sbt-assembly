@@ -7,6 +7,11 @@ This project is based on [Manu Zhang](https://twitter.com/manuzhang)'s fantastic
 * [Shade with SBT](https://manuzhang.github.io/2016/10/15/shading.html)
 * [Shade with SBT II](https://manuzhang.github.io/2016/11/12/shading-2.html)
 
+Also see the following
+
+* http://asyncified.io/2016/04/07/spark-uber-jars-and-shading-with-sbt-assembly/
+* http://queirozf.com/entries/creating-scala-fat-jars-for-spark-on-sbt-with-sbt-assembly-plugin
+
 The blog post uses Apache Gearpump as an example and the files have moved from their original location, but some relevant commits can be found here:
 
 *  https://github.com/huafengw/incubator-gearpump/blob/4474618c4fdd42b152d26a6915704a4f763d14c1/project/BuildShaded.scala
