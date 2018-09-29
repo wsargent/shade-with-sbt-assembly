@@ -32,13 +32,6 @@ After that, you should be able to compile normally.
 sbt compile
 ```
 
-If you are using IntelliJ IDEA or another IDE, you'll need to point to the unmanaged JAR directly to avoid the IDE errors:
- 
-* Open the "shaded/target/2.12" directory
-* Right click on `example-shaded-gs-collections-2.12-0.1-SNAPSHOT.jar`
-* Click add as library
-* Add it to the `app` module.
-
 ## Publishing
 
 Still working on this.
