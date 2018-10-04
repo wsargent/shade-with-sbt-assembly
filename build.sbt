@@ -56,7 +56,7 @@ lazy val app = (project in file("app"))
     // If you are using a maven repository
     // https://www.scala-sbt.org/1.x/docs/Publishing.html
     publishMavenStyle := true,
-    publishTo := Some(Resolver.file("file",  baseDirectory.value / "release-repo" )),
+    publishTo := Some(Resolver.file("file",  baseDirectory.value / "target" / "release-repo" )),
 
     // https://www.scala-sbt.org/1.x/docs/Artifacts.html
     // publish the assembled artifact if it has the classifier "assembly" on it.
