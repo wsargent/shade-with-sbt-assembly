@@ -9,7 +9,11 @@ val scalaVersionNumber = crossScalaVersionNumbers.last
 lazy val commonSettings = Seq(
   organization := "com.example",
   scalaVersion := scalaVersionNumber,
-  test in assembly := {}
+  test in assembly := {},
+  // If you are using a maven repository
+  // https://www.scala-sbt.org/1.x/docs/Publishing.html
+  publishMavenStyle := true,
+  publishTo := Some(Resolver.file("file",  baseDirectory.value / "target" / "release-repo" ))
 )
 
 val disablePublishing = Seq[Setting[_]](
@@ -44,7 +48,7 @@ lazy val shaded_gs_collections = project.in(file("shaded/gs-collections"))
   )
 
 lazy val app = (project in file("app"))
-  .settings(commonSettings: _*)
+  .settings(commonSettings)
   .settings(
     releaseCrossBuild := true,
     crossScalaVersions := crossScalaVersionNumbers,
@@ -53,10 +57,6 @@ lazy val app = (project in file("app"))
         s"shaded-gs-collections-${scalaBinaryVersion.value}-${version.value}-assembly.jar"
     ),
     update := (update dependsOn (shaded_gs_collections / assembly)).value,
-    // If you are using a maven repository
-    // https://www.scala-sbt.org/1.x/docs/Publishing.html
-    publishMavenStyle := true,
-    publishTo := Some(Resolver.file("file",  baseDirectory.value / "target" / "release-repo" )),
 
     // https://www.scala-sbt.org/1.x/docs/Artifacts.html
     // publish the assembled artifact if it has the classifier "assembly" on it.
