@@ -15,59 +15,35 @@ But Gearpump is a large project and so this strips it down to the basics of what
 
 ## Running
 
-You must create the shaded version of the library before you compile anything:
+The shading is handled in `shaded_gs_collections` and the update task is overridden to ensure that shading and creation of jar is done before the `compile` stage, i.e.
 
-```
-sbt assembly
+```scala
+update := (update dependsOn (shaded_gs_collections / assembly)).value
 ```
 
-After that, you should be able to compile normally.
+Compiling works as per usual:
 
-```
+```bash
 sbt compile
 ```
 
-If you are using IntelliJ IDEA or another IDE, you'll need to point to the unmanaged JAR directly to avoid the IDE errors:
- 
-* Open the "shaded/target/2.12" directory
-* Right click on `example-shaded-gs-collections-2.12-0.1-SNAPSHOT.jar`
-* Click add as library
-* Add it to the `app` module.
+You can also publish locally:
+
+```bash
+sbt publishLocal
+```
 
 ## Publishing
 
-Still working on this.
+Cross publishing is something that doesn't work really well with sbt-release and sbt-assembly, because of https://github.com/sbt/sbt-release/issues/219 -- the best way to fix this is to always define your `scalaCrossVersions` in each project individually.
 
-To add the shaded project as a published maven project, you're supposed to do something like:
+```
+sbt release
+```
 
-> We traverse the XML tree and append the shaded dependency to the <dependencies></dependencies> tags.
+and then to run it
 
-```scala
-project(
-  settings ++= Seq(
-    pomPostProcess := {
-        (node: xml.Node) => addShadedDeps(List(
-          <dependency>
-            <groupId>{organization.value}</groupId>
-            <artifactId>{shaded_guava.id}</artifactId>
-            <version>{version.value}</version>
-          </dependency>
-        ), node)
-    }
- )
-)
- 
-private def addShadedDeps(deps: Seq[xml.Node], node: xml.Node): xml.Node = {
-  node match {
-    case elem: xml.Elem =>
-      val child = if (elem.label == "dependencies") {
-        elem.child ++ deps
-      } else {
-        elem.child.map(addShadedDeps(deps, _))
-      }
-      xml.Elem(elem.prefix, elem.label, elem.attributes, elem.scope, false, child: _*)
-    case _ =>
-      node
-  }
-} 
+```bash
+cd /home/wsargent/work/shade-with-sbt-assembly/app/target/release-repo/com/example/app_2.12/1.0.0
+java -jar app_2.12-1.0.0-assembly.jar 
 ```
